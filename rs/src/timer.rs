@@ -1,18 +1,18 @@
 #![allow(non_camel_case_types)]
 
-#[cfg(target_os = "macos")]
 #[repr(C)]
-pub struct MachTimebaseInfo {
+pub struct MachTimeBaseInfo {
   numer: u32,
   denom: u32,
 }
 
-type mach_timebase_info_t = *const MachTimebaseInfo;
-type mach_timebase_data_info_t = MachTimebaseInfo;
+type mach_timebase_info_t = *const MachTimeBaseInfo;
+type mach_timebase_data_info_t = MachTimeBaseInfo;
 
+#[cfg(target_os = "macos")]
 extern {
   fn mach_absolute_time() -> u64;
-  fn mach_timebase_info(info: mach_timebase_info_t) -> i32;
+  fn mach_timebase_info(info: mach_timebase_info_t) -> std::os::raw::c_int;
 }
 
 lazy_static! {
@@ -27,7 +27,7 @@ struct Timer {
 
 impl Timer {
   pub unsafe fn new() -> Self {
-    let info: mach_timebase_data_info_t = MachTimebaseInfo { numer: 0, denom: 0 };
+    let info: mach_timebase_data_info_t = MachTimeBaseInfo { numer: 0, denom: 0 };
     mach_timebase_info(&info);
 
     Self {
